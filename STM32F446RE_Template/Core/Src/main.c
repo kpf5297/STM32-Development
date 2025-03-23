@@ -1,37 +1,28 @@
 /*
+  Author: Kevin Fox
+  Date: 23 Mar
 
   Goal: [App] ↔ [Bluetooth/USB/UART Bridge] ↔ [STM32F103C8] → [Koford S24V-10A] → [Motor]
 
+  Set Duty Cycle:
+  Command: "DXX.X"
+  Example: "D50.5" sets the duty cycle to 50.5%
+  The command starts with 'D' followed by a floating-point number (0.0 to 100.0).
+  This adjusts the PWM output to control motor speed.
 
- 	Set Duty Cycle:
+  Emergency Stop:
+  Command: "ESTOP"
+  This immediately stops the PWM output to the motor.
 
-	Command: "DXX.X"
+  Protocol:
+  - ASCII commands terminated by a newline ('\r' or '\n').
+  - Example: To set motor speed to 75%, send: "D75.0\r\n".
+             To perform an emergency stop, send: "ESTOP\r\n".
 
-	Example: "D50.5" sets the duty cycle to 50.5%
-
-	The command starts with 'D' followed by a floating-point number (0.0 to 100.0)
-
-	This adjusts the PWM output to control motor speed
-
-	Emergency Stop:
-
-	Command: "ESTOP"
-
-	This immediately stops the PWM output to the motor
-
-	The protocol uses ASCII commands terminated by a newline ('\r' or '\n').
-
-	To set the motor speed to 75%, send: "D75.0\r\n"
-
-	To perform an emergency stop, send: "ESTOP\r\n"
-
-	The system will respond with:
-
-	"Duty: XX.X%" after setting a new duty cycle
-
-	"Emergency Stop!" after executing an emergency stop
-
- */
+  Responses:
+  - "Duty: XX.X%" after setting a new duty cycle.
+  - "Emergency Stop!" after executing an emergency stop.
+*/
 
 #include "main.h"
 #include "cmsis_os.h"
@@ -46,7 +37,6 @@
 #include "uart_commands.h"
 #include "config.h"
 
-
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 
@@ -54,26 +44,16 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART2_UART_Init(void);
-void StartDefaultTask(void const * argument);
-//void vCommandTask(void *pvParameters);
-//void process_command(char *cmd);
+void StartDefaultTask(void const *argument);
+int __io_putchar(int ch); // Redirect printf to UART
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart); // UART RX complete callback
+void uartProcessingTask(void *pvParameters); // UART processing task
 
 TaskHandle_t xCommandTaskHandle;
 
 SemaphoreHandle_t xPrintfSemaphore;
 
-int __io_putchar(int ch)
-{
-    if (xPrintfSemaphore != NULL)
-    {
-        if (xSemaphoreTake(xPrintfSemaphore, portMAX_DELAY) == pdTRUE)
-        {
-            HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
-            xSemaphoreGive(xPrintfSemaphore);
-        }
-    }
-    return ch;
-}
+
 
 typedef uint32_t TaskProfiler;
 TaskProfiler task1Profiler, task2Profiler, vCommandTaskProfiler;
@@ -81,28 +61,74 @@ TaskProfiler task1Profiler, task2Profiler, vCommandTaskProfiler;
 void Task1(void *pvParameter);
 void Task2(void *pvParameter);
 
-TaskHandle_t  task1_handle, task2_handle, xCommandTaskHandle;
-
-// Command Queue
-//QueueHandle_t xUartQueue;
-//
-
-// Interrupt UART
-//volatile uint8_t uart_rx_buffer[UART_RX_BUFFER_SIZE];
-//volatile uint8_t uart_rx_index = 0;
-//
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-//  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-//  uint8_t rx_data;
-//
-//  if(huart->Instance == USART2) {
-//    HAL_UART_Receive_IT(huart, &rx_data, 1);
-//    xQueueSendFromISR(xUartQueue, &rx_data, &xHigherPriorityTaskWoken);
-//    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-//  }
-//}
+TaskHandle_t task1_handle, task2_handle, xCommandTaskHandle;
 
 QueueHandle_t uartRxQueue;
+
+int main(void)
+{
+
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_TIM2_Init();
+  MX_USART2_UART_Init();
+
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+
+  xPrintfSemaphore = xSemaphoreCreateMutex();
+  configASSERT(xPrintfSemaphore);
+
+  xTaskCreate(Task1, "Task1", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_LOW, &task1_handle);
+  xTaskCreate(Task2, "Task2", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_LOW, &task2_handle);
+
+  uartRxQueue = xQueueCreate(UART_RX_QUEUE_LENGTH, sizeof(uint8_t));
+
+  xTaskCreate(uartProcessingTask, "UARTTask", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_MEDIUM, NULL);
+
+  uint8_t receiveByte;
+  HAL_UART_Receive_IT(&huart2, &receiveByte, 1);
+
+  vTaskStartScheduler();
+
+  while (1)
+  {
+  }
+}
+
+int __io_putchar(int ch)
+{
+  if (xPrintfSemaphore != NULL)
+  {
+    if (xSemaphoreTake(xPrintfSemaphore, portMAX_DELAY) == pdTRUE)
+    {
+      HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+      xSemaphoreGive(xPrintfSemaphore);
+    }
+  }
+  return ch;
+}
+
+void Task1(void *pvParameter)
+{
+  while (1)
+  {
+    printf("Task1 Running\n\r");
+    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+    task1Profiler++;
+    vTaskDelay(WAIT_TIME_MEDIUM); // Simulate work
+  }
+}
+
+void Task2(void *pvParameter)
+{
+  while (1)
+  {
+    printf("Task2 Running\n\r");
+    HAL_Delay(200); // Simulate work
+    task2Profiler++;
+  }
+}
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -123,129 +149,70 @@ void uartProcessingTask(void *pvParameters)
 {
   uint8_t receivedByte;
 
-  while(1)
+  while (1)
   {
     if (xQueueReceive(uartRxQueue, &receivedByte, portMAX_DELAY) == pdPASS)
     {
       // Process received byte
+      if (receivedByte == 'D') // Start of duty cycle command
+      {
+        char command[10];
+        int index = 0;
+
+        // Read until newline or buffer full
+        while (index < sizeof(command) - 1)
+        {
+          if (xQueueReceive(uartRxQueue, &receivedByte, portMAX_DELAY) == pdPASS)
+          {
+            if (receivedByte == '\r' || receivedByte == '\n')
+            {
+              break; // End of command
+            }
+            command[index++] = receivedByte;
+          }
+        }
+        command[index] = '\0'; // Null-terminate the string
+
+        // Set duty cycle
+        float dutyCycle = atof(command);
+        if (dutyCycle >= 0.0f && dutyCycle <= 100.0f)
+        {
+          __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, (uint32_t)((dutyCycle / 100.0f) * PWM_RESOLUTION));
+          printf("Duty: %.1f%%\n\r", dutyCycle);
+        }
+      }
+      else if (strncmp((char *)&receivedByte, "ESTOP", 5) == 0)
+      {
+        // Emergency stop
+        __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0); // Stop PWM
+        printf("Emergency Stop!\n\r");
+      }
+      else
+      {
+        // Handle other commands or invalid input
+        printf("Invalid Command\n\r");
+      }
     }
   }
 }
-
-
-int main(void)
-{
-
-  HAL_Init();
-  SystemClock_Config();
-  MX_GPIO_Init();
-  MX_TIM2_Init();
-  MX_USART2_UART_Init();
-
-
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-
-  xPrintfSemaphore = xSemaphoreCreateMutex();
-  configASSERT(xPrintfSemaphore);
-
-  xTaskCreate(Task1,"Task1",TASK_STACK_SIZE_SMALL,NULL,TASK_PRIORITY_LOW,&task1_handle);
-  xTaskCreate(Task2,"Task2",TASK_STACK_SIZE_SMALL,NULL,TASK_PRIORITY_LOW,&task2_handle);
-
-//  xUartQueue = xQueueCreate(UART_RX_QUEUE_LENGTH, sizeof(uint8_t));
-//  xTaskCreate(vCommandTask, "CmdTask", 128, NULL, 3, &xCommandTaskHandle);
-
-  uartRxQueue = xQueueCreate(UART_RX_QUEUE_LENGTH, sizeof(uint8_t));
-
-  xTaskCreate(uartProcessingTask, "UARTTask", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_MEDIUM, NULL);
-
-  uint8_t receiveByte;
-  HAL_UART_Receive_IT(&huart2, &receiveByte, 1);
-
-
-  vTaskStartScheduler();
-
-  while (1)
-  {
-
-
-  }
-
-}
-
-void Task1(void *pvParameter) {
-    while (1) {
-        printf("Task1 Running\n\r");
-        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-        task1Profiler++;
-        vTaskDelay(WAIT_TIME_MEDIUM); // Simulate work
-    }
-}
-
-void Task2(void *pvParameter) {
-    while (1) {
-        printf("Task2 Running\n\r");
-        HAL_Delay(200); // Simulate work
-        task2Profiler++;
-    }
-}
-
-//void vCommandTask(void *pvParameters) {
-//    uint8_t rx_char;
-//    uint8_t cmd_buffer[UART_RX_BUFFER_SIZE];
-//    uint8_t cmd_index = 0;
-//
-//    HAL_UART_Receive_IT(&huart2, (uint8_t*)&rx_char, 1);
-//
-//    while (1) {
-//        printf("vCommandTask Running\n\r");
-//
-//        if (xQueueReceive(xUartQueue, &rx_char, portMAX_DELAY) == pdPASS) {
-//            if (rx_char == '\r' || rx_char == '\n') {
-//                cmd_buffer[cmd_index] = '\0';
-//                process_command((char *)cmd_buffer);
-//                cmd_index = 0;
-//            } else {
-//                cmd_buffer[cmd_index++] = rx_char;
-//                if (cmd_index >= UART_RX_BUFFER_SIZE) cmd_index = 0;
-//            }
-//            vCommandTaskProfiler++;
-//        }
-//    }
-//}
-
-
-
-//void process_command(char *cmd) {
-//  if(cmd[0] == 'D') {
-//    float duty = atof(cmd+1);
-//    uint16_t pwm_val = (duty/100.0) * htim2.Init.Period;
-//    __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, pwm_val);
-//    printf("Duty: %.1f%%\r\n", duty);
-//  }
-//  else if(strcmp(cmd, "ESTOP") == 0) {
-//    HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
-//    printf("Emergency Stop!\r\n");
-//  }
-//}
-
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -262,9 +229,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -277,17 +243,16 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief TIM2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_TIM2_Init(void)
 {
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
-
 
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
@@ -324,14 +289,13 @@ static void MX_TIM2_Init(void)
   }
 
   HAL_TIM_MspPostInit(&htim2);
-
 }
 
 /**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief USART2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_USART2_UART_Init(void)
 {
 
@@ -347,15 +311,13 @@ static void MX_USART2_UART_Init(void)
   {
     Error_Handler();
   }
-
-
 }
 
 /**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -376,29 +338,28 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
-
 }
 
 /**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Function implementing the defaultTask thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void const *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     osDelay(1);
   }
   /* USER CODE END 5 */
 }
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -410,17 +371,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-
-
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
