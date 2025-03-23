@@ -64,8 +64,8 @@ all: main-build
 main-build: STM32F446RE_Template.elf secondary-outputs
 
 # Tool invocations
-STM32F446RE_Template.elf STM32F446RE_Template.map: $(OBJS) $(USER_OBJS) /Users/kevinfox/Code/STM32F446RE_Template/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM32F446RE_Template.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/kevinfox/Code/STM32F446RE_Template/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F446RE_Template.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+STM32F446RE_Template.elf STM32F446RE_Template.map: $(OBJS) $(USER_OBJS) /Users/kevinfox/Code/STM32-Development/STM32F446RE_Template/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM32F446RE_Template.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/kevinfox/Code/STM32-Development/STM32F446RE_Template/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F446RE_Template.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

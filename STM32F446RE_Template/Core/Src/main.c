@@ -148,15 +148,15 @@ int main(void)
   xPrintfSemaphore = xSemaphoreCreateMutex();
   configASSERT(xPrintfSemaphore);
 
-  xTaskCreate(Task1,"Task1",128,NULL,1,&task1_handle);
-  xTaskCreate(Task2,"Task2",128,NULL,1,&task2_handle);
+  xTaskCreate(Task1,"Task1",TASK_STACK_SIZE_SMALL,NULL,TASK_PRIORITY_LOW,&task1_handle);
+  xTaskCreate(Task2,"Task2",TASK_STACK_SIZE_SMALL,NULL,TASK_PRIORITY_LOW,&task2_handle);
 
 //  xUartQueue = xQueueCreate(UART_RX_QUEUE_LENGTH, sizeof(uint8_t));
 //  xTaskCreate(vCommandTask, "CmdTask", 128, NULL, 3, &xCommandTaskHandle);
 
   uartRxQueue = xQueueCreate(UART_RX_QUEUE_LENGTH, sizeof(uint8_t));
 
-  xTaskCreate(uartProcessingTask, "UARTTask", 128, NULL, 3, NULL);
+  xTaskCreate(uartProcessingTask, "UARTTask", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_MEDIUM, NULL);
 
   uint8_t receiveByte;
   HAL_UART_Receive_IT(&huart2, &receiveByte, 1);
@@ -177,7 +177,7 @@ void Task1(void *pvParameter) {
         printf("Task1 Running\n\r");
         HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
         task1Profiler++;
-        vTaskDelay(pdMS_TO_TICKS(200)); // Non-blocking delay
+        vTaskDelay(WAIT_TIME_MEDIUM); // Simulate work
     }
 }
 
@@ -292,7 +292,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 255;
+  htim2.Init.Period = PWM_RESOLUTION;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
