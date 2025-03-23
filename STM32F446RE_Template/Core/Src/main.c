@@ -2,7 +2,9 @@
   Author: Kevin Fox
   Date: 23 Mar
 
-  Goal: [App] ↔ [Bluetooth/USB/UART Bridge] ↔ [STM32F103C8] → [Koford S24V-10A] → [Motor]
+  Goal: [App] ↔ [Bluetooth/USB/UART Bridge] ↔ [STM32F446RE] → [Koford S24V10A-4A] → [Motor]
+
+  Frequency: 37 kHz, as recommended by Koford datasheet
 
   Set Duty Cycle:
   Command: "DXX.X"
@@ -37,33 +39,33 @@
 #include "uart_commands.h"
 #include "config.h"
 
+// Handles
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 
+// Initialization functions
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void const *argument);
-int __io_putchar(int ch); // Redirect printf to UART
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart); // UART RX complete callback
-void uartProcessingTask(void *pvParameters); // UART processing task
 
-TaskHandle_t xCommandTaskHandle;
-
+// UART printf redirection
 SemaphoreHandle_t xPrintfSemaphore;
+int __io_putchar(int ch);                                // Redirect printf to UART
 
+// Task handles for future use/profiling
+TaskHandle_t task1_handle, task2_handle, xCommandTaskHandle;
 
-
-typedef uint32_t TaskProfiler;
-TaskProfiler task1Profiler, task2Profiler, vCommandTaskProfiler;
+ typedef uint32_t TaskProfiler;
+ TaskProfiler task1Profiler, task2Profiler, uartProfiler;
 
 void Task1(void *pvParameter);
 void Task2(void *pvParameter);
 
-TaskHandle_t task1_handle, task2_handle, xCommandTaskHandle;
-
 QueueHandle_t uartRxQueue;
+void uartProcessingTask(void *pvParameters);             // UART processing task
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart); // UART RX complete callback
 
 int main(void)
 {
@@ -177,7 +179,7 @@ void uartProcessingTask(void *pvParameters)
         float dutyCycle = atof(command);
         if (dutyCycle >= 0.0f && dutyCycle <= 100.0f)
         {
-          __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, (uint32_t)((dutyCycle / 100.0f) * PWM_RESOLUTION));
+          __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, (uint32_t)((dutyCycle / 100.0f) * (htim2.Init.Period)));
           printf("Duty: %.1f%%\n\r", dutyCycle);
         }
       }
@@ -193,6 +195,7 @@ void uartProcessingTask(void *pvParameters)
         printf("Invalid Command\n\r");
       }
     }
+    uartProfiler++;
   }
 }
 
@@ -255,7 +258,7 @@ static void MX_TIM2_Init(void)
   TIM_OC_InitTypeDef sConfigOC = {0};
 
   // Calc timer period for PWM frequency
-  uint32_t timerClock = HAL_RCC_GetPCLK1Freq() * 2; // APB1
+  uint32_t timerClock = HAL_RCC_GetPCLK1Freq() * 2;   // APB1
   uint32_t period = (timerClock / PWM_FREQUENCY) - 1; // counts based on timer clock
 
   htim2.Instance = TIM2;
@@ -287,7 +290,7 @@ static void MX_TIM2_Init(void)
 
   uint32_t pulse = (PWM_DUTY_CYCLE_INITIAL / 100.0f) * (period);
 
-  sConfigOC.Pulse = pulse; 
+  sConfigOC.Pulse = pulse;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
