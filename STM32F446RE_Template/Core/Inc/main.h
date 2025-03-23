@@ -19,7 +19,6 @@ void Error_Handler(void);
 #define UART_RX_QUEUE_LENGTH 128
 #define UART_RX_BUFFER_SIZE 64
 
-#define configTOTAL_HEAP_SIZE ((size_t)(10 * 1024)) // Adjust as needed
 #define configUSE_PREEMPTION 1
 
 
