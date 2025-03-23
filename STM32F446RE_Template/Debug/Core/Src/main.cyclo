@@ -6,7 +6,7 @@
 ../Core/Src/main.c:148:6:uartProcessingTask	10
 ../Core/Src/main.c:203:6:SystemClock_Config	3
 ../Core/Src/main.c:250:13:MX_TIM2_Init	6
-../Core/Src/main.c:299:13:MX_USART2_UART_Init	2
-../Core/Src/main.c:321:13:MX_GPIO_Init	1
-../Core/Src/main.c:349:6:StartDefaultTask	1
-../Core/Src/main.c:363:6:Error_Handler	1
+../Core/Src/main.c:306:13:MX_USART2_UART_Init	2
+../Core/Src/main.c:328:13:MX_GPIO_Init	1
+../Core/Src/main.c:356:6:StartDefaultTask	1
+../Core/Src/main.c:370:6:Error_Handler	1

@@ -29,9 +29,9 @@
 #define UART_RX_BUFFER_SIZE 64
 
 // PWM configuration
-#define PWM_FREQUENCY 1000 // Hz (TODO: Not implemented in the code)
+#define PWM_FREQUENCY 37000 // 37 kHz, as recommended by Koford datasheet
 #define PWM_RESOLUTION 255 // 8-bit resolution or 256 counts
-#define PWM_DUTY_CYCLE_DEFAULT 25 // Initial on counts or 25 ~= 10% duty cycle using 255 total counts
+#define PWM_DUTY_CYCLE_INITIAL 25 
 
 #endif // CONFIG_H
 
