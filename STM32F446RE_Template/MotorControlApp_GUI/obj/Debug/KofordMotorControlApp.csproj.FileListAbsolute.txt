@@ -1,0 +1,12 @@
+C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.csproj.AssemblyReference.cache
+C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.Properties.Resources.resources
+C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.csproj.GenerateResource.cache
+C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.csproj.CoreCompileInputs.cache
+C:\Code\KofordMotorControlApp\bin\Debug\KofordMotorControlApp.exe.config
+C:\Code\KofordMotorControlApp\bin\Debug\KofordMotorControlApp.exe
+C:\Code\KofordMotorControlApp\bin\Debug\KofordMotorControlApp.pdb
+C:\Code\KofordMotorControlApp\bin\Debug\Newtonsoft.Json.dll
+C:\Code\KofordMotorControlApp\bin\Debug\Newtonsoft.Json.xml
+C:\Code\KofordMotorControlApp\obj\Debug\KofordMo.3875A30D.Up2Date
+C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.exe
+C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.pdb
