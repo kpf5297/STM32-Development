@@ -1,72 +1,13 @@
-/*
-  Author: Kevin Fox
-  Date: 23 Mar
-
-  Goal: [App] ↔ [Bluetooth/USB/UART Bridge] ↔ [STM32F446RE] → [Koford S24V10A-4A] → [Motor]
-
-  Frequency: 37 kHz, as recommended by Koford datasheet
-
-  Set Duty Cycle:
-  Command: "DXX.X"
-  Example: "D50.5" sets the duty cycle to 50.5%
-  The command starts with 'D' followed by a floating-point number (0.0 to 100.0).
-  This adjusts the PWM output to control motor speed.
-
-  Emergency Stop:
-  Command: "ESTOP"
-  This immediately stops the PWM output to the motor.
-
-  Protocol:
-  - ASCII commands terminated by a newline ('\r' or '\n').
-  - Example: To set motor speed to 75%, send: "D75.0\r\n".
-             To perform an emergency stop, send: "ESTOP\r\n".
-
-  Responses:
-  - "Duty: XX.X%" after setting a new duty cycle.
-  - "Emergency Stop!" after executing an emergency stop.
-*/
-
-// #include "main.h"
-// #include "cmsis_os.h"
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include "FreeRTOS.h"
-// #include "queue.h"
-// #include "task.h"
-// #include "semphr.h"
-
-// #include "uart_commands.h"
-// #include "config.h"
-
-// // Handles
-// TIM_HandleTypeDef htim2;
-// UART_HandleTypeDef huart2;
-
-// // Initialization functions
-// void SystemClock_Config(void);
-// static void MX_GPIO_Init(void);
-// static void MX_TIM2_Init(void);
-// static void MX_USART2_UART_Init(void);
-// void StartDefaultTask(void const *argument);
-
-// // UART printf redirection
-// SemaphoreHandle_t xPrintfSemaphore;
-// int __io_putchar(int ch);                                // Redirect printf to UART
-
-// // Task handles for future use/profiling
-// TaskHandle_t task1_handle, task2_handle, xCommandTaskHandle;
-
-//  typedef uint32_t TaskProfiler;
-//  TaskProfiler task1Profiler, task2Profiler, uartProfiler;
-
-// void Task1(void *pvParameter);
-// void Task2(void *pvParameter);
-
-// QueueHandle_t uartRxQueue;
-// void uartProcessingTask(void *pvParameters);             // UART processing task
-// void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart); // UART RX complete callback
-
+/**
+ * @file main.c
+ * @author Kevin Fox
+ * @brief  Main source file for STM32F446RE project
+ * @version 0.1
+ * @date 2025-03-23
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "main.h"
 #include "cmsis_os.h"
 #include "FreeRTOS.h"
@@ -74,115 +15,50 @@
 #include "queue.h"
 #include "semphr.h"
 #include "tasks.h"
-
-// STM32 HAL includes
 #include "stm32f4xx_hal.h"
-
-// Your config, etc.
 #include "config.h"
 
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 QueueHandle_t uartRxQueue = NULL;
 
-
-// Forward declarations of initialization
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART2_UART_Init(void);
-
-// Forward-declare the function that sets up tasks (implemented in tasks.c)
 void tasks_init(void);
 
+/**
+ * @brief main function
+ *
+ * @return int
+ */
 int main(void)
 {
-    HAL_Init();
-    SystemClock_Config();
-    MX_GPIO_Init();
-    MX_TIM2_Init();
-    MX_USART2_UART_Init();
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_TIM2_Init();
+  MX_USART2_UART_Init();
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 
-    // Example: Start PWM right away
-    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  tasks_init(); // Custom tasks initialization
 
-    // Create and start your tasks (this function is in tasks.c)
-    tasks_init();
+  vTaskStartScheduler(); // Start FreeRTOS scheduler
 
-    // Start the FreeRTOS scheduler
-    vTaskStartScheduler();
-
-    // We should never get here if the scheduler starts properly.
-    while (1)
-    {
-    }
+  while (1)
+  {
+  }
 }
 
-// int main(void)
-// {
-
-//   HAL_Init();
-//   SystemClock_Config();
-//   MX_GPIO_Init();
-//   MX_TIM2_Init();
-//   MX_USART2_UART_Init();
-
-//   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-
-//   xPrintfSemaphore = xSemaphoreCreateMutex();
-//   configASSERT(xPrintfSemaphore);
-
-//   xTaskCreate(Task1, "Task1", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_LOW, &task1_handle);
-//   xTaskCreate(Task2, "Task2", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_LOW, &task2_handle);
-
-//   uartRxQueue = xQueueCreate(UART_RX_QUEUE_LENGTH, sizeof(uint8_t));
-
-//   xTaskCreate(uartProcessingTask, "UARTTask", TASK_STACK_SIZE_SMALL, NULL, TASK_PRIORITY_MEDIUM, NULL);
-
-//   uint8_t receiveByte;
-//   HAL_UART_Receive_IT(&huart2, &receiveByte, 1);
-
-//   vTaskStartScheduler();
-
-//   while (1)
-//   {
-//   }
-// }
-
-//int __io_putchar(int ch)
-//{
-//  if (xPrintfSemaphore != NULL)
-//  {
-//    if (xSemaphoreTake(xPrintfSemaphore, portMAX_DELAY) == pdTRUE)
-//    {
-//      HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
-//      xSemaphoreGive(xPrintfSemaphore);
-//    }
-//  }
-//  return ch;
-//}
-
-//void Task1(void *pvParameter)
-//{
-//  while (1)
-//  {
-//    printf("Task1 Running\n\r");
-//    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-//    task1Profiler++;
-//    vTaskDelay(WAIT_TIME_MEDIUM); // Simulate work
-//  }
-//}
-//
-//void Task2(void *pvParameter)
-//{
-//  while (1)
-//  {
-//    printf("Task2 Running\n\r");
-//    HAL_Delay(200); // Simulate work
-//    task2Profiler++;
-//  }
-//}
-
+/**
+ * @brief UART receive complete callback
+ *
+ * This function is called when a byte is received over UART.
+ * It sends the received byte to the FreeRTOS queue for processing.
+ *
+ * @param huart: pointer to the UART handle
+ */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   uint8_t receivedByte;
@@ -200,58 +76,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
 }
-
-//void uartProcessingTask(void *pvParameters)
-//{
-//  uint8_t receivedByte;
-//
-//  while (1)
-//  {
-//    if (xQueueReceive(uartRxQueue, &receivedByte, portMAX_DELAY) == pdPASS)
-//    {
-//      // Process received byte
-//      if (receivedByte == 'D') // Start of duty cycle command
-//      {
-//        char command[10];
-//        int index = 0;
-//
-//        // Read until newline or buffer full
-//        while (index < sizeof(command) - 1)
-//        {
-//          if (xQueueReceive(uartRxQueue, &receivedByte, portMAX_DELAY) == pdPASS)
-//          {
-//            if (receivedByte == '\r' || receivedByte == '\n')
-//            {
-//              break; // End of command
-//            }
-//            command[index++] = receivedByte;
-//          }
-//        }
-//        command[index] = '\0'; // Null-terminate the string
-//
-//        // Set duty cycle
-//        float dutyCycle = atof(command);
-//        if (dutyCycle >= 0.0f && dutyCycle <= 100.0f)
-//        {
-//          __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, (uint32_t)((dutyCycle / 100.0f) * (htim2.Init.Period)));
-//          printf("Duty: %.1f%%\n\r", dutyCycle);
-//        }
-//      }
-//      else if (strncmp((char *)&receivedByte, "ESTOP", 5) == 0)
-//      {
-//        // Emergency stop
-//        __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0); // Stop PWM
-//        printf("Emergency Stop!\n\r");
-//      }
-//      else
-//      {
-//        // Handle other commands or invalid input
-//        printf("Invalid Command\n\r");
-//      }
-//    }
-//    uartProfiler++;
-//  }
-//}
 
 /**
  * @brief System Clock Configuration

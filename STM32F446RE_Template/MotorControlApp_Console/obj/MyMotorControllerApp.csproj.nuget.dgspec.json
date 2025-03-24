@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MyMotorControllerApp\\MyMotorControllerApp.csproj": {}
+    "/Users/kevinfox/Code/STM32-Development/STM32F446RE_Template/MotorControlApp_Console/MyMotorControllerApp.csproj": {}
   },
   "projects": {
-    "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MyMotorControllerApp\\MyMotorControllerApp.csproj": {
+    "/Users/kevinfox/Code/STM32-Development/STM32F446RE_Template/MotorControlApp_Console/MyMotorControllerApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MyMotorControllerApp\\MyMotorControllerApp.csproj",
+        "projectUniqueName": "/Users/kevinfox/Code/STM32-Development/STM32F446RE_Template/MotorControlApp_Console/MyMotorControllerApp.csproj",
         "projectName": "MyMotorControllerApp",
-        "projectPath": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MyMotorControllerApp\\MyMotorControllerApp.csproj",
-        "packagesPath": "C:\\Users\\kevin\\.nuget\\packages\\",
-        "outputPath": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MyMotorControllerApp\\obj\\",
+        "projectPath": "/Users/kevinfox/Code/STM32-Development/STM32F446RE_Template/MotorControlApp_Console/MyMotorControllerApp.csproj",
+        "packagesPath": "/Users/kevinfox/.nuget/packages/",
+        "outputPath": "/Users/kevinfox/Code/STM32-Development/STM32F446RE_Template/MotorControlApp_Console/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\kevin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/kevinfox/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -44,8 +37,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -72,7 +64,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

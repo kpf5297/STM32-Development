@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MyMotorControllerApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b260e0e56e6d040e107b95acf700f2c131b6dd76")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e42e6c6426e20b1bdae613aea359291c7df6890")]
 [assembly: System.Reflection.AssemblyProductAttribute("MyMotorControllerApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MyMotorControllerApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

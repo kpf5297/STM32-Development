@@ -1,51 +1,54 @@
+/**
+ * @file tasks.c
+ * @author Kevin Fox
+ * @brief FreeRTOS tasks implementation for STM32F446RE project
+ * @version 0.1
+ * @date 2025-03-23
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 #include "tasks.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-// Standard library includes
-#include <stdio.h>   // Needed for printf()
-#include <stdlib.h>  // Needed for atof()
-
-// FreeRTOS includes
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
 
-// HAL includes
 #include "stm32f4xx_hal.h"
 #include "config.h"
-#include "main.h"   // So we can get LED_Pin, etc.
+#include "main.h"
 
-// -------------------------------------------------------------------
-// 1) EXTERN declarations so we can use them here:
 extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart2;
 extern QueueHandle_t uartRxQueue;
-// -------------------------------------------------------------------
 
-// Local (static) handles, semaphores, etc.
 static SemaphoreHandle_t xPrintfSemaphore = NULL;
 
-// Task handles
-static TaskHandle_t task1_handle       = NULL;
-static TaskHandle_t task2_handle       = NULL;
+static TaskHandle_t task1_handle = NULL;
+static TaskHandle_t task2_handle = NULL;
 static TaskHandle_t xCommandTaskHandle = NULL;
 
-// Example “profiling” counters
 static uint32_t task1Profiler = 0;
 static uint32_t task2Profiler = 0;
-static uint32_t uartProfiler  = 0;
+static uint32_t uartProfiler = 0;
 
-// Forward declarations
 static void Task1(void *pvParameter);
 static void Task2(void *pvParameter);
 static void uartProcessingTask(void *pvParameter);
 
-// If you want to redirect printf -> UART
+/**
+ * @brief  UART receive complete callback
+ *         This function is called when a byte is received over UART.
+ *         It sends the received byte to the FreeRTOS queue for processing.
+ * @param  huart: pointer to the UART handle
+ */
 int __io_putchar(int ch)
 {
     if (xPrintfSemaphore != NULL)
     {
-        // Wait for the semaphore
         if (xSemaphoreTake(xPrintfSemaphore, portMAX_DELAY) == pdTRUE)
         {
             HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
@@ -56,23 +59,19 @@ int __io_putchar(int ch)
 }
 
 /**
-  * @brief  Create and start all tasks, queues, semaphores, etc.
-  */
+ * @brief  Create and start all tasks, queues, semaphores, etc.
+ */
 void tasks_init(void)
 {
-    // Create the mutex for printf
     xPrintfSemaphore = xSemaphoreCreateMutex();
     configASSERT(xPrintfSemaphore);
 
-    // Create the queue for UART
     uartRxQueue = xQueueCreate(UART_RX_QUEUE_LENGTH, sizeof(uint8_t));
     configASSERT(uartRxQueue);
 
-    // Start receiving interrupts
     uint8_t receiveByte;
     HAL_UART_Receive_IT(&huart2, &receiveByte, 1);
 
-    // Create Task1
     xTaskCreate(Task1,
                 "Task1",
                 TASK_STACK_SIZE_SMALL,
@@ -80,7 +79,6 @@ void tasks_init(void)
                 TASK_PRIORITY_LOW,
                 &task1_handle);
 
-    // Create Task2
     xTaskCreate(Task2,
                 "Task2",
                 TASK_STACK_SIZE_SMALL,
@@ -88,7 +86,6 @@ void tasks_init(void)
                 TASK_PRIORITY_LOW,
                 &task2_handle);
 
-    // Create UART Processing Task
     xTaskCreate(uartProcessingTask,
                 "UARTTask",
                 TASK_STACK_SIZE_SMALL,
@@ -98,22 +95,23 @@ void tasks_init(void)
 }
 
 /**
-  * @brief  Example Task1: toggles LED, prints
-  */
+ * @brief  Example Task1: prints every WAIT_TIME_MEDIUM ms
+ *         and toggles an LED.
+ */
 static void Task1(void *pvParameter)
 {
     for (;;)
     {
         printf("Task1 Running\r\n");
-        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);  // LED blink
+        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin); // LED blink
         task1Profiler++;
         vTaskDelay(WAIT_TIME_MEDIUM); // from config.h
     }
 }
 
 /**
-  * @brief  Example Task2: prints, delays
-  */
+ * @brief  Example Task2: prints every 200ms
+ */
 static void Task2(void *pvParameter)
 {
     for (;;)
@@ -125,8 +123,9 @@ static void Task2(void *pvParameter)
 }
 
 /**
-  * @brief  UART Processing Task
-  */
+ * @brief  UART processing task: processes received commands from the queue
+ *         and sets PWM duty cycle based on the command.
+ */
 static void uartProcessingTask(void *pvParameter)
 {
     uint8_t receivedByte;
@@ -163,7 +162,6 @@ static void uartProcessingTask(void *pvParameter)
             }
             else
             {
-                // Possibly check for 'E', 'ESTOP', etc.
                 printf("Invalid Command\r\n");
             }
         }

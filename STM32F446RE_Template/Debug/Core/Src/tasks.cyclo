@@ -1,5 +1,5 @@
-../Core/Src/tasks.c:44:5:__io_putchar	3
-../Core/Src/tasks.c:61:6:tasks_init	3
-../Core/Src/tasks.c:103:13:Task1	1
-../Core/Src/tasks.c:117:13:Task2	1
-../Core/Src/tasks.c:130:13:uartProcessingTask	9
+../Core/Src/tasks.c:48:5:__io_putchar	3
+../Core/Src/tasks.c:64:6:tasks_init	3
+../Core/Src/tasks.c:101:13:Task1	1
+../Core/Src/tasks.c:115:13:Task2	1
+../Core/Src/tasks.c:129:13:uartProcessingTask	9
