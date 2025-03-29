@@ -89,10 +89,8 @@ To debug using GDB:
    continue
    ```
 
-## ✅ Success
-Your **STM32F103 Blue Pill** should now be running your firmware! 🚀
+```bash
+openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
+  -c "program main.elf verify reset exit"
 
-If you encounter any issues, ensure your ST-Link is properly connected and that OpenOCD can detect it.
-
-Happy coding! 🎯
-
+```
