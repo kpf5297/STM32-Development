@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := STM32F446RE_PWM-DMA
+BUILD_ARTIFACT_NAME := STM32F446RE_PWM-In
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-STM32F446RE_PWM-DMA.elf \
+STM32F446RE_PWM-In.elf \
 
 MAP_FILES += \
-STM32F446RE_PWM-DMA.map \
+STM32F446RE_PWM-In.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-STM32F446RE_PWM-DMA.list \
+STM32F446RE_PWM-In.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: STM32F446RE_PWM-DMA.elf secondary-outputs
+main-build: STM32F446RE_PWM-In.elf secondary-outputs
 
 # Tool invocations
-STM32F446RE_PWM-DMA.elf STM32F446RE_PWM-DMA.map: $(OBJS) $(USER_OBJS) /Users/kevinfox/Code/STM32F446RE_PWM-DMA/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM32F446RE_PWM-DMA.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/kevinfox/Code/STM32F446RE_PWM-DMA/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F446RE_PWM-DMA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM32F446RE_PWM-In.elf STM32F446RE_PWM-In.map: $(OBJS) $(USER_OBJS) /Users/kevinfox/Code/STM32-Development/STM32F446RE_PWM-In/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM32F446RE_PWM-In.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/kevinfox/Code/STM32-Development/STM32F446RE_PWM-In/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F446RE_PWM-In.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-STM32F446RE_PWM-DMA.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "STM32F446RE_PWM-DMA.list"
+STM32F446RE_PWM-In.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "STM32F446RE_PWM-In.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) STM32F446RE_PWM-DMA.elf STM32F446RE_PWM-DMA.list STM32F446RE_PWM-DMA.map default.size.stdout
+	-$(RM) STM32F446RE_PWM-In.elf STM32F446RE_PWM-In.list STM32F446RE_PWM-In.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
