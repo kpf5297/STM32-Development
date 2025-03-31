@@ -102,7 +102,7 @@ static void Task1(void *pvParameter)
 {
     for (;;)
     {
-        printf("Task1 Running\r\n");
+//        printf("Task1 Running\r\n");
         HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin); // LED blink
         task1Profiler++;
         vTaskDelay(WAIT_TIME_MEDIUM); // from config.h
@@ -116,7 +116,7 @@ static void Task2(void *pvParameter)
 {
     for (;;)
     {
-        printf("Task2 Running\r\n");
+//        printf("Task2 Running\r\n");
 
         HAL_Delay(200);
         task2Profiler++;
