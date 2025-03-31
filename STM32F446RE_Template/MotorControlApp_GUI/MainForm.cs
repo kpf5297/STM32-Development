@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace KofordMotorControlApp
 {
+
     public partial class MainForm : Form
     {
         private BlowerMotor blower;
@@ -39,15 +40,24 @@ namespace KofordMotorControlApp
 
         private void RefreshComPorts()
         {
-            comPortComboBox.Items.Clear();
-            var ports = SerialPort.GetPortNames();
-            if (ports.Length == 0)
+            // Disconnect if connected
+            if (isConnected)
             {
-                comPortComboBox.Items.Add("No Ports Found");
+                connection.Disconnect();
+                UpdateConnectionStatus(false);
             }
-            else
+
+            comPortComboBox.Items.Clear();
+            comPortComboBox.Items.Add("Select COM Port");
+            comPortComboBox.SelectedIndex = 0;
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
             {
-                comPortComboBox.Items.AddRange(ports);
+                comPortComboBox.Items.Add(port);
+            }
+            if (ports.Length > 0)
+            {
+                comPortComboBox.SelectedIndex = 1; // Select the first available port
             }
         }
 
@@ -72,6 +82,7 @@ namespace KofordMotorControlApp
             motorRunning = running;
             motorStatusLabel.Text = running ? "Running" : "Stopped";
             motorStatusPanel.BackColor = running ? Color.LightGreen : Color.LightCoral;
+            UpdateUIState();
         }
 
         private void UpdateConnectionStatus(bool connected)
@@ -79,10 +90,16 @@ namespace KofordMotorControlApp
             isConnected = connected;
             connectionStatusLabel.Text = connected ? "Connected" : "Disconnected";
             connectionStatusPanel.BackColor = connected ? Color.LightGreen : Color.LightCoral;
+            UpdateUIState();
         }
 
         private void TriangleWaveControl(object sender, EventArgs e)
         {
+            if (!isConnected)
+            {
+                MessageBox.Show("Please connect to the motor first.");
+                return;
+            }
             if (!isLooping)
             {
                 if (float.TryParse(minDutyTextBox.Text, out minDuty) &&
@@ -105,6 +122,8 @@ namespace KofordMotorControlApp
                 loopThread?.Join();
                 (sender as Button).Text = "Start Triangle Wave";
             }
+
+            UpdateUIState();
         }
 
         private void TriangleWaveLoop()
@@ -129,11 +148,11 @@ namespace KofordMotorControlApp
             if (motorRunning && float.TryParse(dutyTextBox.Text, out float duty))
             {
                 blower.SetDuty(duty);
-                MessageBox.Show($"Duty set to {duty}% successfully.");
+                MessageBox.Show($"Duty cycle set to {duty}% successfully.");
             }
             else
             {
-                MessageBox.Show("Motor must be running to set duty.");
+                MessageBox.Show("Motor must be running to set duty cycle.");
             }
         }
 
@@ -150,6 +169,45 @@ namespace KofordMotorControlApp
             }
         }
 
+        private void UpdateUIState()
+        {
+            bool canControl = isConnected && motorRunning;
+            bool triangleOn = isLooping;
+
+            // COM Port controls - lock while connected
+            comPortComboBox.Enabled = !isConnected;
+
+            // Triangle Wave Controls
+            minDutyTextBox.Enabled = canControl;
+            maxDutyTextBox.Enabled = canControl;
+            periodTextBox.Enabled = canControl;
+
+            // Find triangle wave button and disable
+            foreach (Control c in minDutyTextBox.Parent.Controls)
+            {
+                if (c is Button btn && btn.Text.Contains("Triangle"))
+                {
+                    btn.Enabled = canControl;
+                }
+            }
+
+            // Manual Controls (duty/speed inputs + buttons)
+            bool manualEnabled = canControl && !triangleOn;
+            dutyTextBox.Enabled = manualEnabled;
+            speedTextBox.Enabled = manualEnabled;
+
+            foreach (Control c in dutyTextBox.Parent.Controls)
+            {
+                if (c is Button btn && (
+                    btn.Text == "Set Duty" ||
+                    btn.Text == "Set Speed" ||
+                    btn.Text == "+1" ||
+                    btn.Text == "-1"))
+                {
+                    btn.Enabled = manualEnabled;
+                }
+            }
+        }
 
         private void SetupUI()
         {
@@ -163,6 +221,18 @@ namespace KofordMotorControlApp
             // Connection Controls Group
             var connectionGroup = new GroupBox { Text = "Connection Controls", Location = new Point(10, 10), Size = new Size(300, 180) };
             comPortComboBox = new ComboBox { Location = new Point(10, 30), Size = new Size(150, 30) };
+            comPortComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            comPortComboBox.Items.Add("Select COM Port");
+            comPortComboBox.SelectedIndex = 0;
+            comPortComboBox.SelectedIndexChanged += (s, e) =>
+            {
+                if (comPortComboBox.SelectedItem.ToString() != "Select COM Port")
+                {
+                    connection.Disconnect();
+                    UpdateConnectionStatus(false);
+                }
+            };
+            comPortComboBox.Items.AddRange(SerialPort.GetPortNames());
             var refreshPortsButton = new Button { Text = "Refresh Ports", Location = new Point(170, 30), Size = new Size(120, 30) };
             refreshPortsButton.Click += (s, e) => RefreshComPorts();
 
@@ -179,6 +249,14 @@ namespace KofordMotorControlApp
             var disconnectButton = new Button { Text = "Disconnect", Location = new Point(120, 70), Size = new Size(100, 30) };
             disconnectButton.Click += (s, e) =>
             {
+                if (isLooping)
+                {
+                    isLooping = false;
+                    loopThread?.Join();
+                }
+                blower.Stop();
+                UpdateMotorStatus(false);
+
                 connection.Disconnect();
                 UpdateConnectionStatus(false);
             };
@@ -234,10 +312,37 @@ namespace KofordMotorControlApp
             var setSpeedButton = new Button { Text = "Set Speed", Location = new Point(100, 70), Size = new Size(80, 30) };
             setSpeedButton.Click += SetSpeed;
 
+            var increaseDutyButton = new Button { Text = "+1", Location = new Point(10, 110), Size = new Size(80, 30) };
+            
+            increaseDutyButton.Click += (s, e) =>
+            {
+                if (float.TryParse(dutyTextBox.Text, out float duty))
+                {
+                    duty = Math.Min(duty + 1, 100); // Clamp to 100%
+                    dutyTextBox.Text = duty.ToString("F1");
+                    if (motorRunning) blower.SetDuty(duty);
+                }
+            };
+
+            var decreaseDutyButton = new Button { Text = "-1", Location = new Point(100, 110), Size = new Size(80, 30) };
+            decreaseDutyButton.Click += (s, e) =>
+            {
+                if (float.TryParse(dutyTextBox.Text, out float duty))
+                {
+                    duty = Math.Max(duty - 1, 0); // Clamp to 0%
+                    dutyTextBox.Text = duty.ToString("F1");
+                    if (motorRunning) blower.SetDuty(duty);
+                }
+            };
+
+
             manualControlGroup.Controls.Add(dutyTextBox);
             manualControlGroup.Controls.Add(speedTextBox);
             manualControlGroup.Controls.Add(setDutyButton);
             manualControlGroup.Controls.Add(setSpeedButton);
+            manualControlGroup.Controls.Add(increaseDutyButton);
+            manualControlGroup.Controls.Add(decreaseDutyButton);
+
 
             mainPanel.Controls.Add(connectionGroup);
             mainPanel.Controls.Add(motorControlGroup);

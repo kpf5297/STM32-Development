@@ -61,24 +61,24 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlowerMotor.cs" />
-    <Compile Include="CommandType.cs" />
-    <Compile Include="ConnectedState.cs" />
-    <Compile Include="DisconnectedState.cs" />
-    <Compile Include="IConnectionState.cs" />
-    <Compile Include="MotorCommandBuilder.cs" />
-    <Compile Include="RunningState.cs" />
+    <Compile Include="Motor\BlowerMotor.cs" />
+    <Compile Include="CommandBuilder\CommandType.cs" />
+    <Compile Include="State\ConnectedState.cs" />
+    <Compile Include="State\DisconnectedState.cs" />
+    <Compile Include="State\IConnectionState.cs" />
+    <Compile Include="CommandBuilder\MotorCommandBuilder.cs" />
+    <Compile Include="State\RunningState.cs" />
     <Compile Include="SerialConnectionContext.cs" />
-    <Compile Include="StoppedState.cs" />
-    <Compile Include="IMotorState.cs" />
-    <Compile Include="MotorBase.cs" />
+    <Compile Include="State\StoppedState.cs" />
+    <Compile Include="State\IMotorState.cs" />
+    <Compile Include="Motor\MotorBase.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="IMotor.cs" />
+    <Compile Include="Motor\IMotor.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,5 +107,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

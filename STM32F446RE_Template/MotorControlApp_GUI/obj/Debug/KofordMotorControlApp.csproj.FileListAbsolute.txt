@@ -10,3 +10,15 @@ C:\Code\KofordMotorControlApp\bin\Debug\Newtonsoft.Json.xml
 C:\Code\KofordMotorControlApp\obj\Debug\KofordMo.3875A30D.Up2Date
 C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.exe
 C:\Code\KofordMotorControlApp\obj\Debug\KofordMotorControlApp.pdb
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\bin\Debug\KofordMotorControlApp.exe.config
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\bin\Debug\KofordMotorControlApp.exe
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\bin\Debug\KofordMotorControlApp.pdb
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\bin\Debug\Newtonsoft.Json.dll
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\bin\Debug\Newtonsoft.Json.xml
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\obj\Debug\KofordMotorControlApp.csproj.AssemblyReference.cache
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\obj\Debug\KofordMotorControlApp.Properties.Resources.resources
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\obj\Debug\KofordMotorControlApp.csproj.GenerateResource.cache
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\obj\Debug\KofordMotorControlApp.csproj.CoreCompileInputs.cache
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\obj\Debug\KofordMo.3875A30D.Up2Date
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\obj\Debug\KofordMotorControlApp.exe
+C:\Code\STM32-Development\STM32F446RE_Template\MotorControlApp_GUI\obj\Debug\KofordMotorControlApp.pdb
