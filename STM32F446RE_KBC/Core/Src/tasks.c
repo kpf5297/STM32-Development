@@ -155,10 +155,11 @@ static void uartProcessingTask(void *pvParameter)
                 float dutyCycle = atof(command);
                 if (dutyCycle >= 0.0f && dutyCycle <= 100.0f)
                 {
-                    uint32_t compareVal = (uint32_t)((dutyCycle / 100.0f) * (htim2.Init.Period));
+
+                    uint32_t compareVal = (uint32_t)((dutyCycle / 100.0f) * (htim2.Init.Period + 1));
                     __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, compareVal);
 
-                    printf("Duty: %.1f%%\r\n", dutyCycle);
+                    printf("Duty Cycle Set: %.2f%%\r\n", dutyCycle);
                 }
             }
             else

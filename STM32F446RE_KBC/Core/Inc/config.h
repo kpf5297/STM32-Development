@@ -28,8 +28,8 @@
 #define UART_RX_QUEUE_LENGTH 128
 #define UART_RX_BUFFER_SIZE 64
 
-#define PWM_FREQUENCY 37000 // 37 kHz per Koford datasheet
+#define PWM_FREQUENCY 100000 // 37 kHz per Koford datasheet
 // #define PWM_RESOLUTION 255 // 8-bit resolution or 256 counts
-#define PWM_DUTY_CYCLE_INITIAL 0
+#define PWM_DUTY_CYCLE_INITIAL 50
 
 #endif // CONFIG_H

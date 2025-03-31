@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\",
+  "WorkspaceRootPath": "C:\\code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\",
   "Documents": [
     {
       "AbsoluteMoniker": "D:0:0:{C0E1E2AD-B61A-4128-A53A-1A4BED412173}|KofordMotorControlApp.csproj|c:\\code\\stm32-development\\stm32f446re_template\\motorcontrolapp_gui\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C0E1E2AD-B61A-4128-A53A-1A4BED412173}|KofordMotorControlApp.csproj|solutionrelative:mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C0E1E2AD-B61A-4128-A53A-1A4BED412173}|KofordMotorControlApp.csproj|c:\\code\\stm32-development\\stm32f446re_template\\motorcontrolapp_gui\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{C0E1E2AD-B61A-4128-A53A-1A4BED412173}|KofordMotorControlApp.csproj|C:\\code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{C0E1E2AD-B61A-4128-A53A-1A4BED412173}|KofordMotorControlApp.csproj|solutionrelative:mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
@@ -18,12 +18,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
@@ -32,11 +28,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "MainForm.cs",
-              "DocumentMoniker": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\MainForm.cs",
+              "DocumentMoniker": "C:\\code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\MainForm.cs",
               "RelativeDocumentMoniker": "MainForm.cs",
-              "ToolTip": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\MainForm.cs",
+              "ToolTip": "C:\\code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\MainForm.cs",
               "RelativeToolTip": "MainForm.cs",
-              "ViewState": "AgIAAJMAAAAAAAAAAAAAALQAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAJYAAAAAAAAAAAAcwLQAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-31T01:33:56.886Z",
               "EditorCaption": ""
@@ -45,13 +41,12 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "MainForm.cs [Design]",
-              "DocumentMoniker": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\MainForm.cs",
+              "DocumentMoniker": "C:\\code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\MainForm.cs",
               "RelativeDocumentMoniker": "MainForm.cs",
               "ToolTip": "C:\\Code\\STM32-Development\\STM32F446RE_Template\\MotorControlApp_GUI\\MainForm.cs [Design]",
               "RelativeToolTip": "MainForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-31T01:33:53.095Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-03-31T01:33:53.095Z"
             }
           ]
         }
