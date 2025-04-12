@@ -25,11 +25,6 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # VS Code directories
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 # Visual Studio Code specific files
 .history

@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/kevinfox/Code/vscode_bluepill_uart_cmake/cmake_install.cmake",
+		"/Users/kevinfox/Code/vscode_bluepill_uart_cmake/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
