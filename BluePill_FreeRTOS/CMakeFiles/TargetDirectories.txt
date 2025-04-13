@@ -1,0 +1,7 @@
+/Users/kevinfox/Code/BluePill_FreeRTOS/CMakeFiles/BluePill_FreeRTOS.dir
+/Users/kevinfox/Code/BluePill_FreeRTOS/CMakeFiles/edit_cache.dir
+/Users/kevinfox/Code/BluePill_FreeRTOS/CMakeFiles/rebuild_cache.dir
+/Users/kevinfox/Code/BluePill_FreeRTOS/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+/Users/kevinfox/Code/BluePill_FreeRTOS/cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir
+/Users/kevinfox/Code/BluePill_FreeRTOS/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+/Users/kevinfox/Code/BluePill_FreeRTOS/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
