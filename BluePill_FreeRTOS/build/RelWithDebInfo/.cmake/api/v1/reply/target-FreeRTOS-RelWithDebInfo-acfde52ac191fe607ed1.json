@@ -76,7 +76,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m3  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -mcpu=cortex-m3  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O2 -g -DNDEBUG -std=gnu11"
+					"fragment" : " -mcpu=cortex-m3  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -mcpu=cortex-m3  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -mcpu=cortex-m3  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O2 -g -DNDEBUG -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -94,35 +94,35 @@
 			[
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Core/Inc"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Core/Inc"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Drivers/STM32F1xx_HAL_Driver/Inc"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Drivers/STM32F1xx_HAL_Driver/Inc"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Middlewares/Third_Party/FreeRTOS/Source/include"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Middlewares/Third_Party/FreeRTOS/Source/include"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Drivers/CMSIS/Device/ST/STM32F1xx/Include"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Drivers/CMSIS/Device/ST/STM32F1xx/Include"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/Users/kevinfox/Code/BluePill_FreeRTOS/Drivers/CMSIS/Include"
+					"path" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/Drivers/CMSIS/Include"
 				}
 			],
 			"language" : "C",

@@ -1,4 +1,4 @@
-# Install script for directory: /Users/kevinfox/Code/BluePill_FreeRTOS
+# Install script for directory: /Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,13 +39,13 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/Users/kevinfox/Code/BluePill_FreeRTOS/build/RelWithDebInfo/cmake/stm32cubemx/cmake_install.cmake")
+  include("/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/build/RelWithDebInfo/cmake/stm32cubemx/cmake_install.cmake")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/kevinfox/Code/BluePill_FreeRTOS/build/RelWithDebInfo/install_local_manifest.txt"
+  file(WRITE "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/build/RelWithDebInfo/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -61,6 +61,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/kevinfox/Code/BluePill_FreeRTOS/build/RelWithDebInfo/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/build/RelWithDebInfo/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

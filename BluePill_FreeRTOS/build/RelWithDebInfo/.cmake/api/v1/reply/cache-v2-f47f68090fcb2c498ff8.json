@@ -11,7 +11,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/kevinfox/Code/BluePill_FreeRTOS/build/RelWithDebInfo"
+			"value" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/build/RelWithDebInfo"
 		},
 		{
 			"name" : "BluePill_FreeRTOS_IS_TOP_LEVEL",
@@ -35,7 +35,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/kevinfox/Code/BluePill_FreeRTOS"
+			"value" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS"
 		},
 		{
 			"name" : "CMAKE_ADDR2LINE",
@@ -215,7 +215,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/kevinfox/Code/BluePill_FreeRTOS/build/RelWithDebInfo"
+			"value" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/build/RelWithDebInfo"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -671,7 +671,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/kevinfox/Code/BluePill_FreeRTOS/build/RelWithDebInfo/CMakeFiles/pkgRedirects"
+			"value" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/build/RelWithDebInfo/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -731,7 +731,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/kevinfox/Code/BluePill_FreeRTOS"
+			"value" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1219,11 +1219,11 @@
 			[
 				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "The CMake toolchain file"
 				}
 			],
-			"type" : "UNINITIALIZED",
-			"value" : "/Users/kevinfox/Code/BluePill_FreeRTOS/cmake/gcc-arm-none-eabi.cmake"
+			"type" : "FILEPATH",
+			"value" : "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/cmake/gcc-arm-none-eabi.cmake"
 		},
 		{
 			"name" : "CMAKE_UNAME",

@@ -35,7 +35,7 @@ rule C_COMPILER__BluePill_FreeRTOS_unscanned_RelWithDebInfo
 # Rule for linking C executable.
 
 rule C_EXECUTABLE_LINKER__BluePill_FreeRTOS_RelWithDebInfo
-  command = $PRE_LINK && /opt/homebrew/bin/arm-none-eabi-gcc $FLAGS -mcpu=cortex-m3  -T "/Users/kevinfox/Code/BluePill_FreeRTOS/STM32F103XX_FLASH.ld" --specs=nano.specs -Wl,-Map=BluePill_FreeRTOS.map -Wl,--gc-sections -Wl,--start-group -lc -lm -Wl,--end-group -Wl,--print-memory-usage $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
+  command = $PRE_LINK && /opt/homebrew/bin/arm-none-eabi-gcc $FLAGS -mcpu=cortex-m3  -T "/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/STM32F103XX_FLASH.ld" --specs=nano.specs -Wl,-Map=BluePill_FreeRTOS.map -Wl,--gc-sections -Wl,--start-group -lc -lm -Wl,--end-group -Wl,--print-memory-usage $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking C executable $TARGET_FILE
   restat = $RESTAT
 
@@ -72,7 +72,7 @@ rule C_COMPILER__FreeRTOS_unscanned_RelWithDebInfo
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /opt/homebrew/bin/cmake --regenerate-during-build -S/Users/kevinfox/Code/BluePill_FreeRTOS -B/Users/kevinfox/Code/BluePill_FreeRTOS/build/RelWithDebInfo
+  command = /opt/homebrew/bin/cmake --regenerate-during-build -S/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS -B/Users/kevinfox/Code/STM32-Development/BluePill_FreeRTOS/build/RelWithDebInfo
   description = Re-running CMake...
   generator = 1
 
