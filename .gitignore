@@ -68,15 +68,6 @@ $rider/
 *.log
 *.log.*
 
-# Remove or comment out these lines if you want source code tracked.
-# STM32CubeMX generated files (uncomment these if you want to ignore them)
-# Core/
-# Drivers/
-# Inc/
-# Middlewares/
-# Startup/
-# Ldscripts/
-
 # STM32CubeIDE files (you can customize these as needed)
 STM32CubeIDE/
 Debug/
