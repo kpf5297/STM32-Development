@@ -37,6 +37,7 @@ Debug/
 Release/
 **/bin/
 **/obj/
+build/
 
 # NuGet Packages
 *.nupkg
