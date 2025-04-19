@@ -1,0 +1,101 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Build & Debug Microcontroller - ST-Link",
+            "cwd": "${workspaceFolder}",
+            "type": "cortex-debug",
+            "executable": "${command:cmake.launchTargetPath}",
+            // Let CMake extension decide executable: "${command:cmake.launchTargetPath}"
+            // Or fixed file path: "${workspaceFolder}/path/to/filename.elf"
+            "request": "launch",
+            "servertype": "stlink",
+            "device": "STM32F103C8Tx", //MCU used
+            "interface": "swd",
+            "serialNumber": "",        //Set ST-Link ID if you use multiple at the same time
+            "runToEntryPoint": "main",
+            "svdFile": "${config:STM32VSCodeExtension.cubeCLT.path}/STMicroelectronics_CMSIS_SVD/STM32F103.svd",
+            "v1": false,               //Change it depending on ST Link version
+            "serverpath": "${config:STM32VSCodeExtension.cubeCLT.path}/STLink-gdb-server/bin/ST-LINK_gdbserver",
+            "stm32cubeprogrammer":"${config:STM32VSCodeExtension.cubeCLT.path}/STM32CubeProgrammer/bin",
+            "stlinkPath": "${config:STM32VSCodeExtension.cubeCLT.path}/STLink-gdb-server/bin/ST-LINK_gdbserver",   
+            "armToolchainPath": "${config:STM32VSCodeExtension.cubeCLT.path}/GNU-tools-for-STM32/bin",
+            "gdbPath":"${config:STM32VSCodeExtension.cubeCLT.path}/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",            
+            "serverArgs": [
+                "-m","0",
+            ],
+            //"preLaunchTask": "Build + Flash"
+            /* If you use external loader, add additional arguments */
+            //"serverArgs": ["--extload", "path/to/ext/loader.stldr"],
+        },
+        {
+            "name": "Attach to Microcontroller - ST-Link",
+            "cwd": "${workspaceFolder}",
+            "type": "cortex-debug",
+            "executable": "${command:cmake.launchTargetPath}",
+            // Let CMake extension decide executable: "${command:cmake.launchTargetPath}"
+            // Or fixed file path: "${workspaceFolder}/path/to/filename.elf"
+            "request": "attach",
+            "servertype": "stlink",
+            "device": "STM32F103C8Tx", //MCU used
+            "interface": "swd",
+            "serialNumber": "",        //Set ST-Link ID if you use multiple at the same time
+            "runToEntryPoint": "main",
+            "svdFile": "${config:STM32VSCodeExtension.cubeCLT.path}/STMicroelectronics_CMSIS_SVD/STM32F103.svd",
+            "v1": false,               //Change it depending on ST Link version
+            "serverpath": "${config:STM32VSCodeExtension.cubeCLT.path}/STLink-gdb-server/bin/ST-LINK_gdbserver",
+            "stm32cubeprogrammer":"${config:STM32VSCodeExtension.cubeCLT.path}/STM32CubeProgrammer/bin",
+            "stlinkPath": "${config:STM32VSCodeExtension.cubeCLT.path}/STLink-gdb-server/bin/ST-LINK_gdbserver",   
+            "armToolchainPath": "${config:STM32VSCodeExtension.cubeCLT.path}/GNU-tools-for-STM32/bin",
+            "gdbPath":"${config:STM32VSCodeExtension.cubeCLT.path}/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",            
+            "serverArgs": [
+                "-m","0",
+            ],
+            /* If you use external loader, add additional arguments */
+            //"serverArgs": ["--extload", "path/to/ext/loader.stldr"],
+        },
+        {
+            "name": "Debug with OpenOCD",
+            "type": "cortex-debug",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+          
+            /* ── Firmware image built by CMake ─────────────────────────────── */
+            "executable": "${command:cmake.launchTargetPath}",
+          
+            /* ── GDB server: OpenOCD + ST‑LINK ─────────────────────────────── */
+            "servertype": "openocd",
+            "openOCDPath": "/opt/homebrew/bin/openocd",
+            "configFiles": [
+              "interface/stlink.cfg",
+              "target/stm32f1x.cfg"          // <-- BluePill F103C8T6
+            ],
+            "serverArgs": [
+              // optional tweaks:
+              // "--swd",                     // force SWD (default for ST‑LINK)
+              // "--debug",                   // verbose OpenOCD log
+              // "adapter_khz", "4000"        // 4 MHz SWD/JTAG speed
+            ],
+          
+            /* ── GDB client ───────────────────────────────────────────────── */
+            "gdbPath": "/opt/homebrew/bin/arm-none-eabi-gdb",
+            "runToEntryPoint": "main",
+            "device": "STM32F446RETx",
+            "svdFile": "${workspaceFolder}/.vscode/STM32F446.svd",
+          
+            /* ── Live Watch: real‑time variables while running ────────────── */
+            "liveWatch": {
+              "enabled": true,
+              "refreshRateHz": 5,
+              "variables": [
+                "uwTick",
+                "adcValue[0]",
+                "motorState.speedRpm"
+              ]
+            }
+          }
+            ]
+}

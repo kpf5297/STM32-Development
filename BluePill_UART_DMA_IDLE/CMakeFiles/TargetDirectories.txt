@@ -1,0 +1,6 @@
+/Users/kevinfox/Code/BluePill_UART_DMA_IDLE/CMakeFiles/BluePill_UART_DMA_IDLE.dir
+/Users/kevinfox/Code/BluePill_UART_DMA_IDLE/CMakeFiles/edit_cache.dir
+/Users/kevinfox/Code/BluePill_UART_DMA_IDLE/CMakeFiles/rebuild_cache.dir
+/Users/kevinfox/Code/BluePill_UART_DMA_IDLE/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+/Users/kevinfox/Code/BluePill_UART_DMA_IDLE/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+/Users/kevinfox/Code/BluePill_UART_DMA_IDLE/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir

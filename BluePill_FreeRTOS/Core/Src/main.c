@@ -45,10 +45,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
+osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
 #define BUFFER_SIZE 64
 
@@ -123,11 +125,11 @@ uint8_t GetPushButtonFlag(void)
 
 void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
-  for (int i = 0; i < (int)sizeof(TxData) / 2; i++)
-  {
-    TxData[i] = i % 256;  
-  }
-  currentSend += sizeof(TxData) / 2; // Update the current send size
+    for (int i = 0; i < (int)sizeof(TxData) / 2; i++)
+    {
+      TxData[i] = i % 256;  
+    }
+    currentSend += sizeof(TxData) / 2; // Update the current send size
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -161,18 +163,25 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
   }
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if (GPIO_Pin == Push_Button_Pin) // Check if the interrupt is from the push button
+void SendData(uint8_t *data, uint16_t length) {
+  if (length > 0 && data != NULL) // Check if the length is greater than 0 and data is not NULL
   {
-    // Semophore to protect the shared resource buttonPushFlag
-    if (xSemaphoreTake(xSemaphore, portMAX_DELAY) == pdTRUE)
-    {
-        buttonPushFlag = 1; // Set the button push flag
-        xSemaphoreGive(xSemaphore); // Release the semaphore
-    }
+    HAL_UART_Transmit_DMA(&huart1, data, length); // Transmit the data over UART using DMA
   }
 }
+
+// void HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin)
+// {
+//   if (GPIO_Pin == Push_Button_Pin) // Check if the interrupt is from the push button
+//   {
+//     // Semophore to protect the shared resource buttonPushFlag
+//     if (xSemaphoreTake(xSemaphore, portMAX_DELAY) == pdTRUE)
+//     {
+//         buttonPushFlag = 1; // Set the button push flag
+//         xSemaphoreGive(xSemaphore); // Release the semaphore
+//     }
+//   }
+// }
 
 static void BlueLED_Task(void *argument) {
   for(;;) {
@@ -184,17 +193,16 @@ static void BlueLED_Task(void *argument) {
       }
 
       BlueLED_TaskProfier++; // Increment task profiler variable
-      vTaskDelay(1000); // Delay for 1 second
-      taskYIELD(); // Yield the task to allow other tasks to run
   }
 }
 
 static void YellowLED_Task(void *argument) {
   for(;;) {
       HAL_GPIO_TogglePin(Yellow_LED_GPIO_Port, Yellow_LED_Pin); // Toggle LED
+      
+      vTaskDelay(pdMS_TO_TICKS(5000)); // Delay for 500 milliseconds
+
       YellowLED_TaskProfier++; // Increment task profiler variable
-      vTaskDelay(3000); // Delay for 1 second
-      taskYIELD(); // Yield the task to allow other tasks to run
   }
 }
 
@@ -217,21 +225,18 @@ static void Uart_Task(void *argument) {
       }
 
       Uart_TaskProfier++; // Increment task profiler variable
-      vTaskDelay(2000); // Delay for 2 seconds
-      taskYIELD(); // Yield the task to allow other tasks to run
+      vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 100 milliseconds
   }
 }
 
 static void ADCTask(void *argument) {
   for(;;) {
       HAL_ADC_Start(&hadc1); // Start ADC conversion
-      HAL_ADC_PollForConversion(&hadc1, 10); // Poll for ADC conversion
+      HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY); // Poll for conversion completion
       ADCValue = HAL_ADC_GetValue(&hadc1); // Get the ADC value
       HAL_ADC_Stop(&hadc1); // Stop ADC conversion
       printf("ADC Value: %d\n", ADCValue); // Print the ADC value
-      vTaskDelay(500); // Delay for 0.5 seconds
       ADCTaskProfier++; // Increment task profiler variable
-      taskYIELD(); // Yield the task to allow other tasks to run
   }
 }
 
@@ -243,11 +248,11 @@ static void pushButtonTask(void *argument) {
           buttonPushFlag = 0; // Reset the button push flag
       }
       pushButtonTaskProfier++; // Increment task profiler variable
-      vTaskDelay(1000); // Delay for 1 second
   }
 }
 
 void tasks_init(void) {
+  
   
 if (xTaskCreate(BlueLED_Task, "BlueLED_Task", 128, NULL, 1, NULL) != pdPASS) {
   // Handle error: BlueLED_Task creation failed
@@ -264,13 +269,13 @@ if (xTaskCreate(Uart_Task, "Uart_Task", 128, NULL, 1, NULL) != pdPASS) {
   printf("Error: Uart_Task creation failed\n");
 }
 
-if (xTaskCreate(ADCTask, "ADCTask", 128, NULL, 1, NULL) != pdPASS) {
-  // Handle error: ADCTask creation failed
-}
-
 if (xTaskCreate(pushButtonTask, "pushButtonTask", 128, NULL, 1, NULL) != pdPASS) {
   // Handle error: pushButtonTask creation failed
   printf("Error: pushButtonTask creation failed\n");
+}
+if (xTaskCreate(ADCTask, "ADCTask", 256, NULL, 1, NULL) != pdPASS) {
+  // Handle error: ADCTask creation failed
+  printf("Error: ADCTask creation failed\n");
 }
 
   xPrintfSemaphore = xSemaphoreCreateMutex(); // Create a mutex for printf
@@ -331,10 +336,9 @@ int main(void)
   dataToSend[5] = '\0'; // Null-terminate the string
   dataToSendLength = 5; // Length of the data to send
   // Start transmitting data in DMA mode
-  HAL_UART_Transmit_DMA(&huart1, dataToSend, dataToSendLength);
+  // HAL_UART_Transmit_DMA(&huart1, dataToSend, dataToSendLength);
 
-  // Start receiving data in DMA mode
-  HAL_UART_Receive_DMA(&huart1, rxBuffer, 1); // Start receiving data over UART using DMA
+  SendData(dataToSend, dataToSendLength); // Send data over UART using DMA
 
   // Ensure clock for push button is enabled
 
@@ -359,7 +363,6 @@ int main(void)
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
 
-
   /* USER CODE BEGIN RTOS_THREADS */
   tasks_init(); // Initialize tasks here if needed
   vTaskStartScheduler(); // Start the FreeRTOS scheduler
@@ -367,7 +370,6 @@ int main(void)
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
-
 
   /* We should never get here as control is now taken by the scheduler */
 

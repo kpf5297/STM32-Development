@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/kevinfox/Code/led_strip_controller/cmake_install.cmake",
+		"/Users/kevinfox/Code/led_strip_controller/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

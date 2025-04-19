@@ -22,6 +22,7 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -88,6 +89,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
+  printf("HardFault_Handler\n");
 
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
@@ -103,6 +105,9 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+  printf("MemManage_Handler\n");
+
+
 
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
@@ -118,6 +123,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
+  printf("BusFault_Handler\n");
 
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
@@ -133,6 +139,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
+  printf("UsageFault_Handler\n");
 
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)
@@ -148,6 +155,7 @@ void UsageFault_Handler(void)
 void DebugMon_Handler(void)
 {
   /* USER CODE BEGIN DebugMonitor_IRQn 0 */
+  printf("DebugMon_Handler\n");
 
   /* USER CODE END DebugMonitor_IRQn 0 */
   /* USER CODE BEGIN DebugMonitor_IRQn 1 */
@@ -168,6 +176,7 @@ void DebugMon_Handler(void)
 void DMA1_Channel4_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel4_IRQn 0 */
+
 
   /* USER CODE END DMA1_Channel4_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_tx);
@@ -224,6 +233,7 @@ void USART1_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+  printf("EXTI15_10_IRQHandler\n");
 
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Push_Button_Pin);
