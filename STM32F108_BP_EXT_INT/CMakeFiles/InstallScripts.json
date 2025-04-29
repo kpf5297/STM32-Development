@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/kevinfox/Code/STM32F108_BP_EXT_INT/cmake_install.cmake",
+		"/Users/kevinfox/Code/STM32F108_BP_EXT_INT/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
