@@ -81,3 +81,57 @@ Release/
 .cubemx/
 backup/
 *.upload
+
+# Build output
+/Debug/
+/Release/
+/build/
+/*.elf
+/*.hex
+/*.bin
+/*.map
+/*.list
+/*.srec
+/*.o
+/*.d
+*.su
+*.i
+*.ii
+
+# STM32CubeIDE workspace metadata
+/.settings/
+/.metadata/
+.project
+.cproject
+*.launch
+*.log
+
+# CubeMX generated files (optionally exclude if you generate them)
+/MX_*/ 
+/.mxproject
+*.ioc
+
+# Backup and temp files
+*~
+*.swp
+*.bak
+*.tmp
+
+# OS-generated files (macOS)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS Finder folder metadata
+__MACOSX/
+
+# Thumbnails
+._*
+
+# Compiled dynamic libraries
+*.so
+*.dylib
+*.a
+
+# STM32CubeIDE .externalToolBuilders (optional, auto-generated)
+.externalToolBuilders/
