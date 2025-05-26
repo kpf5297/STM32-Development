@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define RESET_Pin GPIO_PIN_7
 #define RESET_GPIO_Port GPIOC
+#define T_CS_Pin GPIO_PIN_8
+#define T_CS_GPIO_Port GPIOA
 #define CS_Pin GPIO_PIN_9
 #define CS_GPIO_Port GPIOA
 #define DC_Pin GPIO_PIN_6

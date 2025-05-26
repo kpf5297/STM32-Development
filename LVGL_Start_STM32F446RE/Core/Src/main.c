@@ -24,6 +24,7 @@
 #include "ILI9341.h"
 #include "lvgl.h"
 #include "LCDController.h"
+#include "TouchController.h"
 
 /* USER CODE END Includes */
 
@@ -44,6 +45,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
+SPI_HandleTypeDef hspi2;
 DMA_HandleTypeDef hdma_spi1_tx;
 
 /* USER CODE BEGIN PV */
@@ -55,12 +57,18 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void btn_event_cb(lv_event_t *e) {
+    lv_obj_t *label = lv_event_get_user_data(e);
+    lv_label_set_text(label, "Touched!");
+}
+
 
 /* USER CODE END 0 */
 
@@ -95,6 +103,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_SPI1_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 //  ILI9341_Init();
 //  ILI9341_FillScreen(0xF800);
@@ -103,16 +112,18 @@ int main(void)
 
   lv_port_disp_init();
 
+  TouchController_Init();
+
   /* Change Active Screen's background color */
 //  lv_obj_set_style_bg_color(lv_screen_active(), lv_color_hex(0x003a57), LV_PART_MAIN);
 //  lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff), LV_PART_MAIN);
 //
   /* Create a spinner */
-  lv_obj_t * spinner = lv_spinner_create(lv_screen_active());
-  lv_obj_set_size(spinner, 64, 64);
-  lv_obj_align(spinner, LV_ALIGN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_opa(spinner, LV_OPA_COVER, LV_PART_MAIN);
-  lv_obj_set_style_radius(spinner, LV_RADIUS_CIRCLE, LV_PART_MAIN);
+//  lv_obj_t * spinner = lv_spinner_create(lv_screen_active());
+//  lv_obj_set_size(spinner, 64, 64);
+//  lv_obj_align(spinner, LV_ALIGN_BOTTOM_MID, 0, 0);
+//  lv_obj_set_style_opa(spinner, LV_OPA_COVER, LV_PART_MAIN);
+//  lv_obj_set_style_radius(spinner, LV_RADIUS_CIRCLE, LV_PART_MAIN);
 
 //  lv_obj_t *bar = lv_bar_create(lv_screen_active());
 //  lv_obj_set_size(bar, 200, 20);
@@ -123,6 +134,19 @@ int main(void)
 //  lv_obj_set_size(cal, 200, 150);
 //  lv_obj_center(cal);
 //
+
+  lv_obj_t *label = lv_label_create(lv_screen_active());
+  lv_label_set_text(label, "Touch the screen");
+  lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 10);
+
+  lv_obj_t *btn = lv_btn_create(lv_screen_active());
+  lv_obj_align(btn, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_size(btn, 120, 50);
+
+  lv_obj_t *btn_label = lv_label_create(btn);
+  lv_label_set_text(btn_label, "Touch Me");
+
+  lv_obj_add_event_cb(btn, btn_event_cb, LV_EVENT_PRESSED, label);
 
   /* USER CODE END 2 */
 
@@ -231,6 +255,44 @@ static void MX_SPI1_Init(void)
 }
 
 /**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -260,15 +322,15 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(RESET_GPIO_Port, RESET_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, T_CS_Pin|CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
@@ -280,12 +342,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(RESET_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : CS_Pin */
-  GPIO_InitStruct.Pin = CS_Pin;
+  /*Configure GPIO pins : T_CS_Pin CS_Pin */
+  GPIO_InitStruct.Pin = T_CS_Pin|CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DC_Pin */
   GPIO_InitStruct.Pin = DC_Pin;
