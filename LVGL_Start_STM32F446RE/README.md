@@ -1,99 +1,136 @@
-
 # LVGL STM32F446RE Touchscreen Demo
 
-A simple demo project using the **STM32F446RE Nucleo board** and an **ILI9341-based 320x240 SPI TFT display**, powered by **LVGL v9.2**. Designed with **STM32CubeIDE** on macOS.
+A project using the **STM32F446RE Nucleo board** with an **ILI9341-based 320x240 SPI TFT display** and **XPT2046 resistive touch controller**, powered by **LVGL v9.2**. Built with **STM32CubeIDE** on macOS.
 
 ## Features
 
-- Uses LVGL 9.2.3-dev
-- SPI-based ILI9341 driver (manual implementation)
-- Landscape orientation with `ILI9341_SetRotation(3)`
-- Demonstrates an LVGL spinner
-- Configurable framebuffer size
-- No OS / bare-metal
+* LVGL 9.2.3-dev (custom-configured)
+* SPI-based **ILI9341** driver (landscape mode)
+* **XPT2046** touchscreen driver on SPI2
+* LVGL input device integration (via `TouchController.c/.h`)
+* LVGL output handler (via `LCDController.c/.h`)
+* Label/button GUI with full touch interaction
+* Bare-metal (no RTOS)
+* Manual pin assignments with CubeMX-generated setup
+* Compatible with `HAL_SPI_Transmit()` and optional DMA
 
-## Pinout (STM32F446RE ➜ ILI9341 SPI)
+---
 
-| ILI9341 Pin | Function         | STM32 Pin         |
-|-------------|------------------|--------------------|
-| `VCC`       | 3.3V             | 5V               |
-| `GND`       | Ground           | GND                |
-| `CS`        | Chip Select      | `PA9`              |
-| `RESET`     | Reset            | `PC7`              |
-| `DC`        | Data/Command     | `PB6`              |
-| `SDI/MOSI`  | SPI MOSI         | `PA7` (SPI1_MOSI)  |
-| `SCK`       | SPI Clock        | `PA5` (SPI1_SCK)   |
-| `SDO/MISO`  | SPI MISO         | `PA6` (SPI1_MISO)  |
-| `LED`       | Backlight        | 3.3V or GPIO (PA3) |
+## Touchscreen Test Demo
 
-> You can configure alternate pins in `main.h` or the `ILI9341.h` driver header.
+Displays a **"Touch Me"** button. When pressed, the top label changes text to:
+
+> **"Touched!"**
+
+This confirms full touch input and LVGL event flow.
+
+---
+
+## Pinout
+
+### ILI9341 Display (SPI1)
+
+| ILI9341 Pin | Function     | STM32 Pin                 |
+| ----------- | ------------ | ------------------------- |
+| `VCC`       | 3.3V         | 5V (OK for many modules)  |
+| `GND`       | Ground       | GND                       |
+| `CS`        | Chip Select  | `PA9`                     |
+| `RESET`     | Reset        | `PC7`                     |
+| `DC`        | Data/Command | `PB6`                     |
+| `SDI/MOSI`  | SPI MOSI     | `PA7` (SPI1\_MOSI)        |
+| `SCK`       | SPI Clock    | `PA5` (SPI1\_SCK)         |
+| `SDO/MISO`  | SPI MISO     | `PA6` (SPI1\_MISO)        |
+| `LED`       | Backlight    | 3.3V                      |
+
+### XPT2046 Touch Controller (SPI2)
+
+| XPT2046 Pin | Function    | STM32 Pin           |
+| ----------- | ----------- | ------------------- |
+| `T_IRQ`     | Touch IRQ   | *Not connected*     |
+| `T_CS`      | Chip Select | `PA8`               |
+| `T_CLK`     | Clock       | `PB10` (SPI2\_SCK)  |
+| `T_DIN`     | MOSI        | `PC1` (SPI2\_MOSI) |
+| `T_DO`      | MISO        | `PC2` (SPI2\_MISO) |
+
+---
 
 ## Setup
 
-### STM32CubeIDE Project Settings
-- Target: `STM32F446RETx`
-- Toolchain: `arm-none-eabi-gcc`
-- Debug: SWD (via ST-Link)
-- Optimization: `-O0` (for debugging)
-- Float ABI: `-mfloat-abi=hard`
-- FPU: `-mfpu=fpv4-sp-d16`
+### CubeIDE Configuration
 
-### ILI9341 Driver Setup
-- Minimal 3-wire SPI write driver (8-bit)
-- Custom initialization sequence
-- Flushes LVGL pixel buffer via `HAL_SPI_Transmit()`
-- Use DMA (`ILI9341_DrawBitmapDMA`) if needed
+* **MCU:** `STM32F446RETx`
+* **Clock:** PLL from HSE (180 MHz)
+* **SPI1:** For ILI9341 (8-bit, fast prescaler)
+* **SPI2:** For XPT2046 (lower speed prescaler)
+* **DMA:** Optional for SPI1 TX
+* **GPIO:** CS/DC/RESET/T\_CS manually assigned
 
 ### LVGL Configuration
-- Located in `lv_conf.h`
-- `LV_COLOR_DEPTH 16` (RGB565)
-- `LV_USE_DRAW_SW 1` (software renderer)
-- `LV_USE_THEME_DEFAULT 1`
-- Theme mode: Light
 
-## Dependencies
+`lv_conf.h` highlights:
 
-- STM32Cube HAL drivers (`STM32F4xx`)
-- [LVGL](https://github.com/lvgl/lvgl) (included in `Drivers/lvgl`)
-- ILI9341 driver (`Core/Src/ILI9341.c` + `ILI9341.h`)
+* `LV_COLOR_DEPTH 16` (RGB565)
+* `LV_USE_DRAW_SW 1`
+* `LV_USE_THEME_DEFAULT 1`
+* `LV_THEME_DEFAULT_DARK 0`
+* `LV_USE_INPUT_DEVICE 1`
+* Touch input via `lv_indev_set_read_cb`
 
-## Demo Behavior
+---
 
-- Blue background (`#003A57`)
-- Centered white spinner (64x64) aligned bottom middle
+## Project Structure
 
-## How to Build
-
-1. Open with STM32CubeIDE
-2. Build project
-3. Flash to board
-4. Confirm display shows blue screen and spinner
-
-## Directory Structure
-
-LVGL\_Start\_STM32F446RE/
+```txt
+LVGL_Start_STM32F446RE/
 ├── Core/
 │   ├── Inc/
+│   │   ├── main.h
+│   │   ├── ILI9341.h
+│   │   ├── XPT2046.h
+│   │   ├── TouchController.h    ← LVGL input integration
+│   │   └── LCDController.h      ← LVGL output integration
 │   ├── Src/
+│   │   ├── main.c
+│   │   ├── ILI9341.c
+│   │   ├── XPT2046.c            ← Raw touch SPI driver
+│   │   ├── TouchController.c    ← LVGL input glue logic
+│   │   └── LCDController.c      ← LVGL output glue logic
 ├── Drivers/
 │   ├── CMSIS/
-│   ├── STM32F4xx\_HAL\_Driver/
+│   ├── STM32F4xx_HAL_Driver/
 │   └── lvgl/
-├── lv\_conf.h
+├── lv_conf.h
 ├── makefile
 └── README.md
+```
+
+---
+
+## How to Build & Run
+
+1. Open with STM32CubeIDE
+   * Import the project into STM32CubeIDE
+   * Ensure all paths are correctly set up
+   * Check `lv_conf.h` for any custom LVGL settings
+2. Build and flash the project
+3. Screen should show:
+
+   * **Top label:** "Touch the screen"
+   * **Centered button:** "Touch Me"
+4. Touch the button — label updates to say "Touched!"
+
+---
 
 ## Notes
 
-- Touchscreen not yet implemented (ILI9341 only)
-- SPI speed defaults to CubeMX config (suggest > 20 MHz for performance)
-- Optional: add DMA for screen flushing to reduce tearing
+* The XPT2046 uses SPI polling (no IRQ)
+* Touch coordinates are calibrated to match the display resolution
+* Touch reads on demand during `lv_timer_handler`
+* Default rotation: landscape (ILI9341 `SetRotation(3)`)
 
 ---
 
-## Author
+## License & Author
 
-Kevin Fox  
-[MIT License](LICENSE)
-
----
+MIT License
+**Kevin Fox**
