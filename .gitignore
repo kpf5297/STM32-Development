@@ -106,11 +106,6 @@ backup/
 *.launch
 *.log
 
-# CubeMX generated files (optionally exclude if you generate them)
-/MX_*/ 
-/.mxproject
-*.ioc
-
 # Backup and temp files
 *~
 *.swp
