@@ -15,9 +15,9 @@
 #define CS_LOW()   HAL_GPIO_WritePin(XPT2046_CS_PORT, XPT2046_CS_PIN, GPIO_PIN_RESET)
 #define CS_HIGH()  HAL_GPIO_WritePin(XPT2046_CS_PORT, XPT2046_CS_PIN, GPIO_PIN_SET)
 
-#define PRESS_THRES   100      /* tweak for your panel */
+#define PRESS_THRES   100 
 
-static SPI_HandleTypeDef *xpt_spi = NULL;   /* saved CubeMX handle */
+static SPI_HandleTypeDef *xpt_spi = NULL; 
 
 
 /* -------------------------------------------------------------------- */

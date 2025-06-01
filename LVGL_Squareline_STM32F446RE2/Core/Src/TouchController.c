@@ -27,7 +27,7 @@ int __io_getchar (void)
     return ch;
 }
 
-/* ---------- raw limits – fill in YOUR numbers ----------------------- */
+
 /*
 Corner	raw‑X	raw‑Y
 top‑left	≈ 273	≈ 242
