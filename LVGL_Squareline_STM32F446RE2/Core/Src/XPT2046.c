@@ -19,6 +19,7 @@
 
 static SPI_HandleTypeDef *xpt_spi = NULL;   /* saved CubeMX handle */
 
+
 /* -------------------------------------------------------------------- */
 static uint16_t spi_xfer(uint8_t cmd)
 {
@@ -68,5 +69,6 @@ bool XPT2046_GetTouch(uint16_t *x, uint16_t *y)
 
     *x = (x1 + x2) >> 1;
     *y = (y1 + y2) >> 1;
+
     return true;
 }
