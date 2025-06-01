@@ -1,14 +1,19 @@
-/*
- * TouchController.h
- *
- *  Created on: May 26, 2025
- *      Author: kevinfox
+/**
+ * TouchController.h ― LVGL input device glue for XPT2046
  */
-#ifndef TOUCH_CONTROLLER_H
-#define TOUCH_CONTROLLER_H
+#ifndef TOUCH_CONTROLLER_H_
+#define TOUCH_CONTROLLER_H_
 
 #include "lvgl.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void TouchController_Init(void);
 
-#endif // TOUCH_CONTROLLER_H
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* TOUCH_CONTROLLER_H_ */

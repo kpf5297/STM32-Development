@@ -25,6 +25,7 @@
 #include "lvgl.h"
 #include "LCDController.h"
 #include "TouchController.h"
+#include "ui.h"
 
 /* USER CODE END Includes */
 
@@ -48,6 +49,8 @@ SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 DMA_HandleTypeDef hdma_spi1_tx;
 
+UART_HandleTypeDef huart2;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -58,6 +61,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -104,6 +108,7 @@ int main(void)
   MX_DMA_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 //  ILI9341_Init();
 //  ILI9341_FillScreen(0xF800);
@@ -115,8 +120,8 @@ int main(void)
   TouchController_Init();
 
   /* Change Active Screen's background color */
-//  lv_obj_set_style_bg_color(lv_screen_active(), lv_color_hex(0x003a57), LV_PART_MAIN);
-//  lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff), LV_PART_MAIN);
+  lv_obj_set_style_bg_color(lv_screen_active(), lv_color_hex(0x003a57), LV_PART_MAIN);
+  lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff), LV_PART_MAIN);
 //
   /* Create a spinner */
 //  lv_obj_t * spinner = lv_spinner_create(lv_screen_active());
@@ -135,18 +140,46 @@ int main(void)
 //  lv_obj_center(cal);
 //
 
-  lv_obj_t *label = lv_label_create(lv_screen_active());
-  lv_label_set_text(label, "Touch the screen");
-  lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 10);
+//  lv_obj_t *label = lv_label_create(lv_screen_active());
+//  lv_label_set_text(label, "Touch the screen");
+//  lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 10);
+//
+//  lv_obj_t *btn = lv_btn_create(lv_screen_active());
+//  lv_obj_align(btn, LV_ALIGN_CENTER, 0, 0);
+//  lv_obj_set_size(btn, 120, 50);
+//
+//  lv_obj_t *btn_label = lv_label_create(btn);
+//  lv_label_set_text(btn_label, "Touch Me");
+//
+//  lv_obj_add_event_cb(btn, btn_event_cb, LV_EVENT_PRESSED, label);
 
-  lv_obj_t *btn = lv_btn_create(lv_screen_active());
-  lv_obj_align(btn, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_size(btn, 120, 50);
+  /* Create a chart object */
+//  lv_obj_t *chart = lv_chart_create(lv_screen_active());
+//  lv_obj_set_size(chart, 220, 140);
+//  lv_obj_center(chart);
+//  lv_chart_set_type(chart, LV_CHART_TYPE_LINE);     // Line chart
+//  lv_chart_set_point_count(chart, 10);              // 10 points
+//  lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
 
-  lv_obj_t *btn_label = lv_label_create(btn);
-  lv_label_set_text(btn_label, "Touch Me");
+  /* Add a data series */
+//  lv_chart_series_t *ser = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
 
-  lv_obj_add_event_cb(btn, btn_event_cb, LV_EVENT_PRESSED, label);
+  /* Fill in some data points */
+//  lv_chart_set_next_value(chart, ser, 10);
+//  lv_chart_set_next_value(chart, ser, 30);
+//  lv_chart_set_next_value(chart, ser, 55);
+//  lv_chart_set_next_value(chart, ser, 60);
+//  lv_chart_set_next_value(chart, ser, 20);
+//  lv_chart_set_next_value(chart, ser, 80);
+//  lv_chart_set_next_value(chart, ser, 65);
+//  lv_chart_set_next_value(chart, ser, 30);
+//  lv_chart_set_next_value(chart, ser, 50);
+//  lv_chart_set_next_value(chart, ser, 75);
+//  lv_chart_set_next_value(chart, ser, 100);
+
+  ui_init();
+
+
 
   /* USER CODE END 2 */
 
@@ -293,6 +326,39 @@ static void MX_SPI2_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -349,12 +415,22 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : T_IRQ_Pin */
+  GPIO_InitStruct.Pin = T_IRQ_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(T_IRQ_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : DC_Pin */
   GPIO_InitStruct.Pin = DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DC_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
