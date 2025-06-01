@@ -98,14 +98,6 @@ backup/
 *.i
 *.ii
 
-# STM32CubeIDE workspace metadata
-/.settings/
-/.metadata/
-.project
-.cproject
-*.launch
-*.log
-
 # Backup and temp files
 *~
 *.swp
